@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import Link from "next/link"; // تأكد من إضافة هذه للاستفادة من التنقل بين الصفحات
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const Register = () => {

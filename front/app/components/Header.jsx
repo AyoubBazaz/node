@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 
 function Header() {
   const router = useRouter();
-  const role = sessionStorage.getItem("role");
   const [token, setToken] = useState(null);
 
   useEffect(() => {
@@ -31,8 +30,7 @@ function Header() {
   return (
     <div className="flex items-center justify-around p-4 bg-white shadow-lg rounded-lg border border-gray-200">
       <Link href="/" className="flex items-center text-2xl font-semibold text-gray-800 hover:text-blue-600 transition duration-300">
-  <span>Welcome</span>,
-  <span className="ml-1 font-semibold text-green-500">{role}</span>
+  <span>Welcome</span>
 </Link>
 
   

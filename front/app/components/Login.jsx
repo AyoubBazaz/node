@@ -17,12 +17,13 @@ const Login = () => {
       const response = await axios.post("http://localhost:1111/login", {
         email,
         pass,
-      });
+      }, { withCredentials: true });
       Cookies.set("token", response.data.accessToken, {
         expires: 7, 
         secure: false, // true for https
         sameSite: "Strict",
       });
+      
       sessionStorage.setItem("role", response.data.role);
       setMessage("Login successful!");
       router.push("/")

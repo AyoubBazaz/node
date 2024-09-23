@@ -1,3 +1,4 @@
+import RequireAuth from "./components/RequireAuth";
 import "./globals.css";
 
 export const metadata = {
@@ -11,7 +12,9 @@ export default function RootLayout({ children }) {
       <body
         className={`antialiased `}>
           <div className="min-h-screen bg-gray-100">
-        {children}
+          <RequireAuth>
+           {children}
+          </RequireAuth>
           </div>
       </body>
     </html>

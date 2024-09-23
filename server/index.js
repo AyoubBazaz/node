@@ -32,7 +32,7 @@ app.post("/logout", AuthController.logout);
 // User Routes
 app.get("/users", UserController.getUsers);
 // Book Routes
-app.get("/books", BookController.getAllBooks);
+app.get("/books",BookController.getAllBooks);
 app.post("/books", BookController.addBook);
 app.delete("/books/:id",verifyJWT, verifyRole("admin"), BookController.deleteBookById);
 

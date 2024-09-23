@@ -36,23 +36,42 @@ const Books = () => {
 
   const deleteBook = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this book?");
-    if (!confirmDelete) {
+    if (!confirmDelete) return;
+    if (!token) {
+      alert("Token not found");
       return;
     }
-    const token = Cookies.get("token");
-      if (!token) {
-        alert("Token not found");
-        return;
-      }
     try {
       await axios.delete(`http://localhost:1111/books/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBooks(books.filter((book) => book._id !== id));
     } catch (error) {
-      alert("Error deleting book");
+      if (error.response && error.response.status === 403) {
+        try {
+          const response = await axios.post("http://localhost:1111/refresh", {}, {
+            withCredentials: true,
+          });
+          Cookies.set("token", response.data.accessToken);
+          await axios.delete(`http://localhost:1111/books/${id}`, {
+            headers: { Authorization: `Bearer ${response.data.accessToken}` },
+          });
+          setBooks(books.filter((book) => book._id !== id));
+        } catch (error) {
+          if (error.response && error.response.status === 403) {
+            alert("Your session has expired. Please log in again.")
+            router.push("/Login")
+          }else if (error.response && error.response.status === 401) {
+            alert("Not allowed")
+          }{
+            alert("Error deleting book");
+          }
+        }
+      } 
     }
   };
+  
+  
 
   return (
     <section>
