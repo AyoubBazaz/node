@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { apiRequest } from "./apiRequest";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
@@ -14,8 +15,21 @@ const Books = () => {
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const response = await axios.get("http://localhost:1111/books");
-      setBooks(response.data);
+      try {
+        const response = await apiRequest({
+          method: 'get',
+          url: "http://localhost:1111/books",
+        });
+  
+        setBooks(response.data);
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          alert("Your session has expired. Please log in again.");
+          router.push("/Login");
+        } else {
+          alert("Error fetching books");
+        }
+      }
     };
     fetchBooks();
   }, []);
@@ -37,39 +51,26 @@ const Books = () => {
   const deleteBook = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this book?");
     if (!confirmDelete) return;
-    if (!token) {
-      alert("Token not found");
-      return;
-    }
     try {
-      await axios.delete(`http://localhost:1111/books/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await apiRequest({
+        method: 'delete',
+        url: `http://localhost:1111/books/${id}`,
       });
       setBooks(books.filter((book) => book._id !== id));
+      // alert("Book deleted successfully");
     } catch (error) {
       if (error.response && error.response.status === 403) {
-        try {
-          const response = await axios.post("http://localhost:1111/refresh", {}, {
-            withCredentials: true,
-          });
-          Cookies.set("token", response.data.accessToken);
-          await axios.delete(`http://localhost:1111/books/${id}`, {
-            headers: { Authorization: `Bearer ${response.data.accessToken}` },
-          });
-          setBooks(books.filter((book) => book._id !== id));
-        } catch (error) {
-          if (error.response && error.response.status === 403) {
-            alert("Your session has expired. Please log in again.")
-            router.push("/Login")
-          }else if (error.response && error.response.status === 401) {
-            alert("Not allowed")
-          }{
-            alert("Error deleting book");
-          }
-        }
-      } 
+        alert("Your session has expired. Please log in again.");
+        router.push("/Login");
+      } else if (error.response && error.response.status === 401) {
+        alert("Not allowed");
+      } else {
+        alert("Error deleting book");
+      }
     }
   };
+  
+
   
   
 
